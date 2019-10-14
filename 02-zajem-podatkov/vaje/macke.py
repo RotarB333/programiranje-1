@@ -1,5 +1,6 @@
 import csv
 import os
+import requests
 
 ###############################################################################
 # Najprej definirajmo nekaj pomožnih orodij za pridobivanje podatkov s spleta.
@@ -8,9 +9,9 @@ import os
 # definiratje URL glavne strani bolhe za oglase z mačkami
 cats_frontpage_url = 'http://www.bolha.com/zivali/male-zivali/macke/'
 # mapa, v katero bomo shranili podatke
-cat_directory = 'TODO'
+cat_directory = 'macke'
 # ime datoteke v katero bomo shranili glavno stran
-frontpage_filename = 'TODO'
+frontpage_filename = 'frontpage.html'
 # ime CSV datoteke v katero bomo shranili podatke
 csv_filename = 'TODO'
 
@@ -19,15 +20,18 @@ def download_url_to_string(url):
     """Funkcija kot argument sprejme niz in puskuša vrniti vsebino te spletne
     strani kot niz. V primeru, da med izvajanje pride do napake vrne None.
     """
+    
     try:
         # del kode, ki morda sproži napako
-        page_content = 'TODO'
-    except 'TODO':
+        page_content = requests.get(url).text
+    except requests.exception.RequestException as e:
         # koda, ki se izvede pri napaki
         # dovolj je če izpišemo opozorilo in prekinemo izvajanje funkcije
-        raise NotImplementedError()
+        print(e)
+        page_content =""
+
     # nadaljujemo s kodo če ni prišlo do napake
-    raise NotImplementedError()
+    return page_content
 
 
 def save_string_to_file(text, directory, filename):
@@ -48,7 +52,10 @@ def save_string_to_file(text, directory, filename):
 def save_frontpage(page, directory, filename):
     """Funkcija shrani vsebino spletne strani na naslovu "page" v datoteko
     "directory"/"filename"."""
-    raise NotImplementedError()
+    #content = page_content(page)
+    content = download_url_to_string(page)
+    save_string_to_file(content, directory, filename)
+    return None
 
 
 ###############################################################################
@@ -58,9 +65,9 @@ def save_frontpage(page, directory, filename):
 
 def read_file_to_string(directory, filename):
     """Funkcija vrne celotno vsebino datoteke "directory"/"filename" kot niz"""
-    raise NotImplementedError()
-
-
+    vsebina = open(os.path.join(directory, filename),'r', encoding='utf-8').read()
+    return vsebina
+  
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja vsebino spletne strani,
 # in ga razdeli na dele, kjer vsak del predstavlja en oglas. To storite s
 # pomočjo regularnih izrazov, ki označujejo začetek in konec posameznega
@@ -157,5 +164,5 @@ def main(redownload=True, reparse=True):
     raise NotImplementedError()
 
 
-if __name__ == '__main__':
-    main()
+#if __name__ == '__main__':
+#    main()
