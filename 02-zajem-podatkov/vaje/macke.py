@@ -73,11 +73,19 @@ def read_file_to_string(directory, filename):
 # pomočjo regularnih izrazov, ki označujejo začetek in konec posameznega
 # oglasa. Funkcija naj vrne seznam nizov.
 
+'''
+<div class="ad">
+                        <div class="coloumn image">
+'''
 
 def page_to_ads(page_content):
     """Funkcija poišče posamezne ogllase, ki se nahajajo v spletni strani in
     vrne njih seznam"""
-    raise NotImplementedError()
+    exp = r'<div class="ad">\s(.*?)<div class="clear"></div>.*<a title="(?P<naslov>.*)" href=".*</h3>\s*(?P<vsebina>.*?)<div .*?<b>'
+    expp = re.compile(exp, re.DOTALL)
+
+    return re.findall(expp, page_content)
+  
 
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
