@@ -50,9 +50,16 @@
 
 module type NAT = sig
   type t
-
   val eq   : t -> t -> bool
   val zero : t
+  val one : t
+  val add : t -> t -> t
+  (* vzamemo tip t dodamo tip t in dobimo t!*)
+  val sub : t -> t -> t
+  (* 0 je v programiranju naravno stevilo!*)
+  val mul : t -> t -> t
+  val to_int : t -> int
+  val of_int : int -> t
   (* Dodajte manjkajoče! *)
   (* val to_int : t -> int *)
   (* val of_int : int -> t *)
@@ -70,8 +77,14 @@ end
 module Nat_int : NAT = struct
 
   type t = int
-  let eq x y = failwith "later"
+  let eq x y = x = y
   let zero = 0
+  let one = 1
+  let add x y = x + y
+  let sub x y = if x > y then x-y else 0
+  let mul x y = x * y
+  let to_int x = x
+  let of_int x = x
   (* Dodajte manjkajoče! *)
 
 end
@@ -90,9 +103,36 @@ end
 
 module Nat_peano : NAT = struct
 
-  type t = unit (* To morate spremeniti! *)
-  let eq x y = failwith "later"
-  let zero = () (* To morate spremeniti! *)
+  type t = Z | S of t (* Zero in Successor *)
+  let rec eq x y = 
+    match (x,y) with
+    | (Z,Z) -> true
+    | (S x,S y) -> eq x y
+    | (_, _) -> false
+  let zero = Z
+  let one = S Z
+  let rec add x = function
+    | Z -> x
+    | S y -> S(add x y)
+  let rec sub x y = 
+    match (x,y) with
+    | (_, Z) -> x
+    | (Z, _) -> Z
+    | (S x, S y) -> sub x y
+  let rec mul x y =
+    match x with
+    | Z -> Z
+    | S x -> add y (mul x y)
+  let rec to_int n = 
+    match n with
+    | Z -> 0
+    | S x -> 1 + to_int x
+  let rec of_int n =
+    if n <= 0 then Z
+    else S(of_int(n-1))
+
+
+  (* 3 = S(S(S Z))*)
   (* Dodajte manjkajoče! *)
 
 end
@@ -118,7 +158,16 @@ end
  - : int = 4950
 [*----------------------------------------------------------------------------*)
 
-let sum_nat_100 (module Nat : NAT) = ()
+let sum_nat_100 (module Nat : NAT) = 
+  let hundred = Nat.of_int 99 in
+  (* 0 je tu naravno število?*)
+  let rec sum_x_100 x =
+    if Nat.eq x hundred then hundred
+    else
+      (* x + sum_x_100 (x+1)*)
+      Nat.add x (sum_x_100 (Nat.add x Nat.one))
+  in
+  sum_x_100 Nat.zero |> Nat.to_int
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Now we follow the fable told by John Reynolds in the introduction.
@@ -132,8 +181,19 @@ let sum_nat_100 (module Nat : NAT) = ()
 
 module type COMPLEX = sig
   type t
+  
+  val one : t
+  val zero : t
+  val i : t
+
   val eq : t -> t -> bool
-  (* Dodajte manjkajoče! *)
+
+  val neg : t -> t
+  val conj : t -> t 
+
+  val add : t -> t -> t
+  val sub : t -> t -> t
+  val mul : t -> t -> t
 end
 
 (*----------------------------------------------------------------------------*]
@@ -144,8 +204,21 @@ end
 module Cartesian : COMPLEX = struct
 
   type t = {re : float; im : float}
+  
+  let one = {re = 1.; im = 0.}
+  let zero = {re = 0.; im = 0.}
+  let i = {re = 0.; im = 1.}
 
-  let eq x y = failwith "later"
+  let eq z w =  z.re = w.re && z.im = w.im
+
+  let neg z = {re = -. z.re; im = -. z.im}
+  let conj z = {re = z.re; im = -. z.im}
+
+  let add z w = {re = z.re +. w.re; im = z.im +. w.im}
+  let sub z w = {re = z.re -. w.re; im = z.im -. w.im}
+  let mul z w = {re = z.re *. w.re -. z.im *. w.im; im = z.re *. w.im +. z.im *. w.re}
+  
+
   (* Dodajte manjkajoče! *)
 
 end
