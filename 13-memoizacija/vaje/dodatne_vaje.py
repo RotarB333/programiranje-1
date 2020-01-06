@@ -10,7 +10,36 @@ from functools import lru_cache
 
 
 def najdaljse_narascajoce_podzaporedje(sez):
-    return None
+
+    @lru_cache(maxsize=256)   
+    def najdaljse(i, meja):
+        if i >=  len(sez):
+            return []
+        elif sez[i] < meja:
+            return najdaljse(i+1, meja)
+        else:
+            sprejmemo = [sez[i]] + najdaljse(i+1, sez[i])
+            zavrnemo = najdaljse(i+1, meja)
+            if len(sprejmemo) > len(zavrnemo):
+                return sprejmemo
+            else:
+                return zavrnemo
+    return najdaljse(0, sez[0])
+
+
+#        max_zap = []
+#        max_dolzina = 0
+#            novo_zap = []
+#            novo_zap.append(i)
+#            for j in sez[1:]:
+#                if i <= j:
+#                    novo_zap.append(j)
+#                    i = j
+#            sez = sez[1:]
+#            if len(novo_zap) > max_dolzina:
+#                max_zap = novo_zap
+#                max_dolzina = len(novo_zap)
+#       return max_zap
 
 ###############################################################################
 # Nepreviden študent je pustil robotka z umetno inteligenco nenadzorovanega.
