@@ -181,7 +181,12 @@ let rec unzip_tlrec list =
  - : int = 12
 [*----------------------------------------------------------------------------*)
 
-let rec loop condition f x = ()
+let rec loop condition f x = 
+  if condition x then
+  let x = f x in
+  loop condition f x
+  else
+  x
   
 
 (*----------------------------------------------------------------------------*]
@@ -194,7 +199,10 @@ let rec loop condition f x = ()
  - : string = "FICUS"
 [*----------------------------------------------------------------------------*)
 
-let rec fold_left_no_acc = ()
+let rec fold_left_no_acc f = function
+| [] | _ :: [] -> failwith "List too short."
+| x :: y :: [] -> f x y
+| x :: y :: tl -> fold_left_no_acc f ((f x y) :: tl)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [apply_sequence f x n] vrne seznam zaporednih uporab funkcije [f] na
@@ -208,7 +216,14 @@ let rec fold_left_no_acc = ()
  - : int list = []
 [*----------------------------------------------------------------------------*)
 
-let rec apply_sequence = ()
+let rec apply_sequence = 
+  let rec apply_aux f x n acc =
+    if n < 0 then
+      reverse acc
+    else
+      apply_aux f (f x) (n - 1) (x :: acc)
+  in
+  apply_aux f x n []
 
 (*----------------------------------------------------------------------------*]
  Funkcija [filter f list] vrne seznam elementov [list], pri katerih funkcija [f]
@@ -218,7 +233,9 @@ let rec apply_sequence = ()
  - : int list = [4; 5]
 [*----------------------------------------------------------------------------*)
 
-let rec filter = ()
+let rec filter = function
+  | [] -> []
+  | x :: xs -> if f x then x :: (filter f xs) else filter f xs
 
 (*----------------------------------------------------------------------------*]
  Funkcija [exists] sprejme seznam in funkcijo, ter vrne vrednost [true] čim
@@ -231,7 +248,9 @@ let rec filter = ()
  - : bool = false
 [*----------------------------------------------------------------------------*)
 
-let rec exists = ()
+let rec exists = function
+  | [] -> false
+  | x :: xs -> if f x then true else exists f xs
 
 (*----------------------------------------------------------------------------*]
  Funkcija [first f default list] vrne prvi element seznama, za katerega
